@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Index2</title>
+</head>
+
+<body>
+  <h1>Buna!</h1>
+  <h3>Aici o sa va prezint exercitiile si rezultatele lor!</h1>
+    <p id="rezultate"></p>
+    <script type="module" src="./functii.js"></script>
+    <script type="module">
+      import { arrayEx1 } from './variabile.js'
+      import { gasesteNrCelMaiMic} from './functii.js'
+      const fruits = ["Banana", "Orange", "Apple", "Mango"];
+      const array = arrayEx1
+      document.getElementById("rezultate").innerHTML += `Exercitiul 1. </br>`;
+      document.getElementById("rezultate").innerHTML += `Conditia este: Găsiți cel mai mic număr din arrayul declarat în fisier1</br>`;
+      document.getElementById("rezultate").innerHTML += `Variabilă declarată este - ${arrayEx1}</br>`;
+      document.getElementById("rezultate").innerHTML += `Rezultatul meu este - ${gasesteNrCelMaiMic(arrayEx1) }</br>`;
+    </script>
+
+</body>
+
+</html>
