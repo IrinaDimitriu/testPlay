@@ -1,4 +1,5 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '@playwright/test'
+import credential from "../resources/testData.json" with {type: "json"}
 
 test(
   "has title",
@@ -30,3 +31,16 @@ test(
     ).toBeVisible();
   }
 );
+
+test.skip("login", async ({ page }) => {
+  await page.goto("https://letcode.in/signin");
+  await page
+    .getByRole("textbox", { name: "Enter registered email" })
+    .fill(credential.customerDetails.username_default);
+  await page
+    .getByPlaceholder("Password")
+    .fill(credential.customerDetails.username_default);
+  await page.getByRole("button", { name: "Log in" }).click();
+  await page.waitForURL("https://letcode.in/");
+  await expect(page).toHaveTitle("LetCode with Koushik");
+});

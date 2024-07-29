@@ -1,0 +1,6 @@
+{
+    "customerDetails": {
+        "username_default": "defaultUser",
+        "password_default": "password"
+    }
+}
