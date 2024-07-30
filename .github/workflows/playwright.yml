@@ -95,10 +95,6 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
           TRIGGERED_BY="${{ github.triggering_actor }}"
-          if [ "${{ github.event_name }}" == "schedule" ]; then
-            TRIGGERED_BY="scheduled run"
-          fi
-
           BRANCH="${{ github.ref_name }}"
 
           if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
