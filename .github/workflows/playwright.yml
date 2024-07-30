@@ -101,6 +101,9 @@ jobs:
             STATUS=":black_square_for_stop: Test suite *E2E smoke tests* was cancelled"
             COLOR="#808080"
           fi
+          echo $TRIGGERED_BY
+          echo $BRANCH
+          echo $REPORT_SUMMARY
 
       - name: Post to a Slack channel
         if: always()
