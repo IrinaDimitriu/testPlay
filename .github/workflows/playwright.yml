@@ -104,6 +104,7 @@ jobs:
           echo $TRIGGERED_BY
           echo $BRANCH
           echo $REPORT_SUMMARY
+          echo $COLOR
 
       - name: Post to a Slack channel
         if: always()
