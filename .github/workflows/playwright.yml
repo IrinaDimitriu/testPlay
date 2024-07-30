@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 jobs:
   setup-and-run-tests:
     timeout-minutes: 15
@@ -11,28 +11,28 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: npm ci
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      id: e2e_tests
-      run: npx playwright test --grep @smoke --project=chromium
+      - name: Run Playwright tests
+        id: e2e_tests
+        run: npx playwright test --grep @smoke --project=chromium
 
-    - name: Upload blob report to GitHub Actions Artifacts
-      if: always()
-      continue-on-error: true
-      uses: actions/upload-artifact@v3
-      with:
-        name: all-blob-reports
-        path: blob-report
-        retention-days: 14
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: all-blob-reports
+          path: blob-report
+          retention-days: 14
 
   merge-reports-and-upload:
     # Merge reports after playwright tests, even if some shards have failed
@@ -40,127 +40,126 @@ jobs:
     needs: [setup-and-run-tests]
     runs-on: ubuntu-latest
     outputs:
-        timestamp: ${{ steps.timestampid.outputs.timestamp }}
+      timestamp: ${{ steps.timestampid.outputs.timestamp }}
     steps:
+      # We want a unique identifier to be used when we create subdirectories for our github pages with reports
+      - name: Set a timestamp
+        id: timestampid
+        # this will store current time with UTC in outputs.timestamp (eg of value: 20231028_233147Z)
+        run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
 
-    # We want a unique identifier to be used when we create subdirectories for our github pages with reports
-    - name: Set a timestamp
-      id: timestampid
-      # this will store current time with UTC in outputs.timestamp (eg of value: 20231028_233147Z)
-      run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT" 
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
 
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: npm ci
+      # we now download the reports uploaded previously to merge them and create one single html report
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: all-blob-reports # name of the file stored as artifact (as uploaded at the previous job)
+          path: all-blob-reports # name of the folder where the download will be saved
 
-    # we now download the reports uploaded previously to merge them and create one single html report
-    - name: Download blob reports from GitHub Actions Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: all-blob-reports # name of the file stored as artifact (as uploaded at the previous job)
-        path: all-blob-reports # name of the folder where the download will be saved
+      # Playwright will generate a report and store it inside a folder called '/playwright-report'
+      - name: Merge the blobs into one single HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
 
-    # Playwright will generate a report and store it inside a folder called '/playwright-report'
-    - name: Merge the blobs into one single HTML Report
-      run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload full html report to artifacts for history
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report-${{ steps.timestampid.outputs.timestamp }}
+          path: playwright-report
+          retention-days: 14
 
-    - name: Upload full html report to artifacts for history
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: playwright-report-${{ steps.timestampid.outputs.timestamp }}
-        path: playwright-report
-        retention-days: 14
+      - name: Push the new files to github pages
+        # This will create a separate branch called gh-pages where it will store only reports. And from where it will push all future changes
+        # to github pages. Having a separate branch will keep the reports and changes commits separate to your main/master
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./playwright-report # from what folder to take files. It takes only contents
+          destination_dir: ${{ steps.timestampid.outputs.timestamp }} # a sub-directory where to publish to avoid overwriting other reports
 
-    - name: Push the new files to github pages
-    # This will create a separate branch called gh-pages where it will store only reports. And from where it will push all future changes 
-    # to github pages. Having a separate branch will keep the reports and changes commits separate to your main/master
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./playwright-report # from what folder to take files. It takes only contents
-        destination_dir: ${{ steps.timestampid.outputs.timestamp }} # a sub-directory where to publish to avoid overwriting other reports
+      - name: Write URL in summary
+        run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
 
-    - name: Write URL in summary
-      run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
-
-    - name: Post to a Slack channel
-      if: always()
-      id: slack
-      uses: slackapi/slack-github-action@v1.26.0
-      with:
-        channel-id: 'D07EQS1C65S'
-        payload: |
-          TRIGGERED_BY="${{ github.triggering_actor }}"
-          BRANCH="${{ github.ref }}"
-          REPORT_SUMMARY='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
-          if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
-            STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
-            COLOR="#2EB67D"
-          elif [ "${{ needs.setup-and-run-tests.result }}" == "failure" ]; then
-            STATUS=":x: Test suite *E2E smoke tests* has failed"
-            COLOR="#E01E5A"
-          else
-            STATUS=":black_square_for_stop: Test suite *E2E smoke tests* was cancelled"
-            COLOR="#808080"
-          fi
-          
+      - name: Post to a Slack channel
+        if: always()
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        env:
+          CI_PIPELINE_URL: "https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}"
+          SLACK_CHANNEL: "D07EQS1C65S"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          channel-id: "D07EQS1C65S"
           payload: |
-          {
-              "attachments": [
-              {
-                "blocks": [
-                  {
-                    "type": "section",
-                    "text": {
+            TRIGGERED_BY='${{ github.triggering_actor }}'
+            BRANCH='${{ github.ref }}'
+            REPORT_SUMMARY='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
+            if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
+              STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
+              COLOR="#2EB67D"
+            elif [ "${{ needs.setup-and-run-tests.result }}" == "failure" ]; then
+              STATUS=":x: Test suite *E2E smoke tests* has failed"
+              COLOR="#E01E5A"
+            else
+              STATUS=":black_square_for_stop: Test suite *E2E smoke tests* was cancelled"
+              COLOR="#808080"
+            fi
+
+            payload: |
+            {
+                "attachments": [
+                {
+                  "blocks": [
+                    {
+                      "type": "section",
+                      "text": {
                         "type": "mrkdwn",
                         "text": "$STATUS:\n*<$CI_PIPELINE_URL|Current runner link>*"
                       }
                     },
-                  {
-                  "type": "section",
-                  "fields": [
                     {
-                    "type": "mrkdwn",
-                    "text": "*Branch:*\n$BRANCH"
+                      "type": "section",
+                      "fields": [
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Branch:*\n$BRANCH"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Triggered by:*\n$TRIGGERED_BY"
+                        },
+                        {
+                          "type": "mrkdwn",
+                          "text": "*Buld time:*\n'Time: $(TZ=$TZ date)'"
+                        }
+                      ]
                     },
                     {
-                    "type": "mrkdwn",
-                    "text": "*Triggered by:*\n$TRIGGERED_BY"
-                    },
-                    {
-                    "type": "mrkdwn",
-                    "text": "*Buld time:*\n'Time: $(TZ=$TZ date)'"
+                      "type": "section",
+                      "text": {
+                        "type": "mrkdwn",
+                        "text": "Test results (link available after 20 secs)."
+                      },
+                      "accessory": {
+                        "type": "button",
+                        "text": {
+                          "type": "plain_text",
+                          "text": "Summary",
+                          "emoji": true
+                        },
+                        "value": "click_me_123",
+                        "url": '$REPORT_SUMMARY',
+                        "action_id": "button-action"
+                      }
                     }
                   ]
-                },
-                {
-                "type": "section",
-                "text": {
-                    "type": "mrkdwn",
-                    "text": "Test results (link available after 20 secs)."
-                  },
-                "accessory": {
-                    "type": "button",
-                    "text": {
-                    "type": "plain_text",
-                    "text": "Summary",
-                    "emoji": true
-                  },
-                "value": "click_me_123",
-                "url": '$REPORT_SUMMARY',
-                "action_id": "button-action"
-              }
+                }
+                ]
             }
-          ]
-          }
-          ]
-          }
-      env:
-          CI_PIPELINE_URL: 'https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}'
-          SLACK_CHANNEL: 'D07EQS1C65S'
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      
+        
