@@ -96,6 +96,7 @@ jobs:
       run: |
           TRIGGERED_BY="${{ github.triggering_actor }}"
           BRANCH="${{ github.ref_name }}"
+          REPORT_SUMMARY='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
 
           if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
             STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
@@ -114,7 +115,7 @@ jobs:
             \"attachments\":[
               {
                 \"color\":\"$COLOR\",
-                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|VIEW LOGS>\n\n:bar_chart: <$GITHUB_STEP_SUMMARY|VIEW REPORT>\",
+                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|VIEW LOGS>\n\n:bar_chart: <$REPORT_SUMMARY|VIEW REPORT>\",
                 \"footer\":\"Time: $(TZ=$TZ date)\"
               }
             ]
