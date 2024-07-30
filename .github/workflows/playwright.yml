@@ -86,3 +86,37 @@ jobs:
 
     - name: Write URL in summary
       run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
+
+    - name: Post to a Slack channel
+      if: always()
+      env:
+          CI_PIPELINE_URL: 'https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}'
+          SLACK_CHANNEL: 'D07EQS1C65S'
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: |
+          TRIGGERED_BY="${{ github.triggering_actor }}"
+          BRANCH="${{ github.ref_name }}"
+          REPORT_SUMMARY='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
+
+          if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
+            STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
+            COLOR="#2EB67D"
+          elif [ "${{ needs.setup-and-run-tests.result }}" == "failure" ]; then
+            STATUS=":x: Test suite *E2E smoke tests* has failed"
+            COLOR="#E01E5A"
+          else
+            STATUS=":black_square_for_stop: Test suite *E2E smoke tests* was cancelled"
+            COLOR="#808080"
+          fi
+
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"channel\":\"$SLACK_CHANNEL\",
+            \"username\":\"Playwright\",
+            \"attachments\":[
+              {
+                \"color\":\"$COLOR\",
+                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|Logs>\n\n:bar_chart: <$REPORT_SUMMARY|Test results (link available after 20 secs)>\",
+                \"footer\":\"Time: $(TZ=$TZ date)\"
+              }
+            ]
+          }" $SLACK_WEBHOOK_URL
