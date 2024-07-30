@@ -120,13 +120,13 @@ jobs:
             {
               "attachments": [
                 {
-                  "color": '$COLOR',
+                  "color": "#ff7800",
                   "blocks": [
                     {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": '$STATUS:\n*<$CI_PIPELINE_URL|Current runner link>*'
+                        "text": "status"
                       }
                     },
                     {
@@ -134,15 +134,15 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": '*Branch:*\n$BRANCH'
+                          "text": "branchdsf"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": '*Triggered by:*\n$TRIGGERED_BY'
+                          "text": "trigger"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*Buld time:*\n'Time: $(TZ=$TZ date)'"
+                          "text": "build"
                         }
                       ]
                     },
@@ -160,7 +160,7 @@ jobs:
                           "emoji": true
                         },
                         "value": "click_me_123",
-                        "url": '$REPORT_SUMMARY',
+                        "url": "https://jsonformatter.curiousconcept.com/#",
                         "action_id": "button-action"
                       }
                     }
