@@ -111,18 +111,18 @@ jobs:
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
         with:
-          channel-id: "D07EQS1C65S"
+          channel-id: $SLACK_CHANNEL
           payload: |
             {
               "attachments": [
                 {
-                  "color": "#ff7800",
+                  "color": "$COLOR",
                   "blocks": [
                     {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "status"
+                        "text": "$STATUS:\n*<$CI_PIPELINE_URL|Current runner link>*"
                       }
                     },
                     {
@@ -130,15 +130,15 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "branchdsf"
+                          "text": "*Branch:*\n$BRANCH"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "trigger"
+                          "text": "*Triggered by:*\n$TRIGGERED_BY"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "build"
+                          "text": "*Buld time:*\n"Time: $(TZ=$TZ date)""
                         }
                       ]
                     },
@@ -156,7 +156,7 @@ jobs:
                           "emoji": true
                         },
                         "value": "click_me_123",
-                        "url": "https://jsonformatter.curiousconcept.com",
+                        "url": "$REPORT_SUMMARY",
                         "action_id": "button-action"
                       }
                     }
