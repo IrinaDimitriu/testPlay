@@ -105,12 +105,6 @@ jobs:
           echo $BRANCH
           echo $REPORT_SUMMARY
           echo $COLOR
-        env:
-          COLOR: $COLOR
-          STATUS: $STATUS
-          BRANCH: $BRANCH
-          TRIGER: $TRIGGERED_BY
-          REPORT_SUMMARY: 'https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
 
       - name: Post to a Slack channel
         if: always()
@@ -132,7 +126,7 @@ jobs:
             {
               "attachments": [
                 {
-                  "color": \"$COLOR\",
+                  "color": $COLOR,
                   "blocks": [
                     {
                       "type": "section",
