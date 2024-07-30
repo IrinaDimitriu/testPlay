@@ -25,7 +25,7 @@ jobs:
       continue-on-error: true
       uses: actions/upload-artifact@v3
       with:
-        name: all-blob-reports
+        name: merged-reports-as-blob
         path: blob-report
         retention-days: 14
 
