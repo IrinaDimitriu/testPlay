@@ -125,13 +125,13 @@ jobs:
             {
               "attachments": [
                 {
-                  "color": ${{github.env.COLOR}},
+                  "color": "#2EB67D",
                   "blocks": [
                     {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "$STATUS:*\n<${{env.CI_PIPELINE_URL}}|Current runner link>*"
+                        "text": "Test suite *E2E smoke tests* has succeeded:*\n<${{env.CI_PIPELINE_URL}}|Current runner link>*"
                       }
                     },
                     {
@@ -139,15 +139,15 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*Branch:*\n${{github.env.BRANCH}}"
+                          "text": "*Branch:*\n'integrate_slack'"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*Triggered by:*\n DIMITRIU IRINA}"
+                          "text": "*Triggered by:*\n Dimitriu Irina"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*Buld time:*\n"Time: $(TZ=$TZ date)""
+                          "text": "*Buld time:*\n'Time: $(TZ=$TZ date)'"
                         }
                       ]
                     },
