@@ -91,8 +91,8 @@ jobs:
       if: always()
       env:
           CI_PIPELINE_URL: 'https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}'
-          SLACK_CHANNEL: 'C07EK90S5CM'
-          SLACK_WEBHOOK_URL: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_CHANNEL: 'D07EQS1C65S'
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
           TRIGGERED_BY="${{ github.triggering_actor }}"
           if [ "${{ github.event_name }}" == "schedule" ]; then
