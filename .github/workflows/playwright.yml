@@ -6,7 +6,9 @@ on:
     branches: [ main, master ]
 jobs:
   setup-and-run-tests:
-    timeout-minutes: 60
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -15,11 +17,14 @@ jobs:
         node-version: 18
     - name: Install dependencies
       run: npm ci
+
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
+
     - name: Run Playwright tests
       id: e2e_tests
       run: npx playwright test --grep @smoke --project=chromium
+
     - name: Upload blob report to GitHub Actions Artifacts
       if: always()
       continue-on-error: true
@@ -37,6 +42,7 @@ jobs:
     outputs:
         timestamp: ${{ steps.timestampid.outputs.timestamp }}
     steps:
+
     # We want a unique identifier to be used when we create subdirectories for our github pages with reports
     - name: Set a timestamp
       id: timestampid
@@ -77,7 +83,6 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./playwright-report # from what folder to take files. It takes only contents
         destination_dir: ${{ steps.timestampid.outputs.timestamp }} # a sub-directory where to publish to avoid overwriting other reports
-        user_name: 'github-actions[bot]'
-        user_email: 'github-actions[bot]@users.noreply.github.com'
+
     - name: Write URL in summary
-      run: echo "### Test results (link available after 20 secs) - https://github.com/IrinaDimitriu/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
+      run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/playwright-example-with-typescript/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
