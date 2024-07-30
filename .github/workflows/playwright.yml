@@ -96,7 +96,7 @@ jobs:
       run: |
           TRIGGERED_BY="${{ github.triggering_actor }}"
           BRANCH="${{ github.ref }}"
-          REPORT="https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}"
+          REPORT='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/'
 
           if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
             STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
