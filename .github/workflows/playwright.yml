@@ -114,13 +114,13 @@ jobs:
             {
               "attachments": [
                 {
-                  "color": "$COLOR",
+                  "color": '$COLOR',
                   "blocks": [
                     {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "$STATUS:\n*<$CI_PIPELINE_URL|Current runner link>*"
+                        "text": '$STATUS:\n*<$CI_PIPELINE_URL|Current runner link>*'
                       }
                     },
                     {
@@ -128,11 +128,11 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*Branch:*\n$BRANCH"
+                          "text": '*Branch:*\n$BRANCH'
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*Triggered by:*\n$TRIGGERED_BY"
+                          "text": '*Triggered by:*\n$TRIGGERED_BY'
                         },
                         {
                           "type": "mrkdwn",
@@ -154,7 +154,7 @@ jobs:
                           "emoji": true
                         },
                         "value": "click_me_123",
-                        "url": "$REPORT_SUMMARY",
+                        "url": '$REPORT_SUMMARY',
                         "action_id": "button-action"
                       }
                     }
