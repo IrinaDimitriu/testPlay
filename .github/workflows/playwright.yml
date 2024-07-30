@@ -95,8 +95,8 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
           TRIGGERED_BY="${{ github.triggering_actor }}"
-          BRANCH="${{ github.ref }}"
-          REPORT='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/'
+          BRANCH="${{ github.ref_name }}"
+          REPORT='https://github.com/IrinaDimitriu/testPlay/${{ steps.timestampid.outputs.timestamp }}/'
 
           if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
             STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
