@@ -13,10 +13,42 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "prompt-sync": "^4.2.0"
+    "prompt-sync": "^4.2.0",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
     "@playwright/test": "^1.45.1",
     "@types/node": "^20.14.10"
+  },
+  "tags": ["scope:regression"],
+  "targets": {
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": [
+        "{workspaceRoot}/dist/.playwright/e2e"
+      ],
+      "options": {
+        "config": "playwright.config.ts",
+        "fullyParallel": true,
+        "timeout": 240000
+      },
+      "configurations": {
+        "local": {
+          "headless": false,
+          "reporter": "html",
+          "retries": 0,
+          "headed": true
+        },
+        "ci": {
+          "forbidOnly": true,
+          "reporter": "blob",
+          "retries": 2,
+          "workers": "6"
+        }
+      }
+    },
+    "e2e-headless-ui": {
+      "command": "pnpm exec nx run e2e:e2e --configuration=ci --headed=false --ui=true --skip-nx-cache=true"
+    }
   }
 }
