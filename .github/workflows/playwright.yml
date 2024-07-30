@@ -105,9 +105,25 @@ jobs:
           echo $BRANCH
           echo $REPORT_SUMMARY
           echo $COLOR
+        env:
+          COLOR: $COLOR
+          STATUS: $STATUS
+          BRANCH: $BRANCH
+          TRIGER: $TRIGGERED_BY
+          REPORT_SUMMARY: 'https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
 
       - name: Post to a Slack channel
         if: always()
+        env:
+          CI_PIPELINE_URL: "https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}"
+          SLACK_CHANNEL: "D07EQS1C65S"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          COLOR: $COLOR
+          STATUS: $STATUS
+          BRANCH: $BRANCH
+          TRIGER: $TRIGGERED_BY
+          REPORT_SUMMARY: 'https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -116,13 +132,13 @@ jobs:
             {
               "attachments": [
                 {
-                  "color": "${{ env.COLOR}}",
+                  "color": \"$COLOR\",
                   "blocks": [
                     {
                       "type": "section",
                       "text": {
                         "type": "mrkdwn",
-                        "text": "${{ env.STATUS}}:*\n<${{ env.CI_PIPELINE_URL}}|Current runner link>*"
+                        "text": "$STATUS:*\n<$CI_PIPELINE_URL|Current runner link>*"
                       }
                     },
                     {
@@ -130,11 +146,11 @@ jobs:
                       "fields": [
                         {
                           "type": "mrkdwn",
-                          "text": "*Branch:*\n${{ env.BRANCH}}"
+                          "text": "*Branch:*\n$BRANCH"
                         },
                         {
                           "type": "mrkdwn",
-                          "text": "*Triggered by:*\n${{ env.TRIGER}}"
+                          "text": "*Triggered by:*\n$TRIGER"
                         },
                         {
                           "type": "mrkdwn",
@@ -156,7 +172,7 @@ jobs:
                           "emoji": true
                         },
                         "value": "click_me_123",
-                        "url": "${{ env.REPORT_SUMMARY}}",
+                        "url": "REPORT_SUMMARY",
                         "action_id": "button-action"
                       }
                     }
@@ -164,14 +180,5 @@ jobs:
                 }
               ]
             }
-        env:
-          CI_PIPELINE_URL: "https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}"
-          SLACK_CHANNEL: "D07EQS1C65S"
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-          COLOR: $COLOR
-          STATUS: $STATUS
-          BRANCH: $BRANCH
-          TRIGER: $TRIGGERED_BY
-          REPORT_SUMMARY: 'https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
+        
  
