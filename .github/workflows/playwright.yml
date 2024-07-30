@@ -1,18 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [main, master]
+    branches: [ main, master ]
   pull_request:
-    branches: [main, master]
-
-  workflow_dispatch:  
-    inputs:
-      username:
-        description: "give me your username"
-        default: "irinaD"
-        type: "string"
-
-
+    branches: [ main, master ]
 jobs:
   setup-and-run-tests:
     timeout-minutes: 15
@@ -20,28 +11,28 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm ci
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Install dependencies
+      run: npm ci
 
-      - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
 
-      - name: Run Playwright tests
-        id: e2e_tests
-        run: npx playwright test --grep @smoke --project=chromium
+    - name: Run Playwright tests
+      id: e2e_tests
+      run: npx playwright test --grep @smoke --project=chromium
 
-      - name: Upload blob report to GitHub Actions Artifacts
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@v3
-        with:
-          name: all-blob-reports
-          path: blob-report
-          retention-days: 14
+    - name: Upload blob report to GitHub Actions Artifacts
+      if: always()
+      continue-on-error: true
+      uses: actions/upload-artifact@v3
+      with:
+        name: all-blob-reports
+        path: blob-report
+        retention-days: 14
 
   merge-reports-and-upload:
     # Merge reports after playwright tests, even if some shards have failed
@@ -49,57 +40,64 @@ jobs:
     needs: [setup-and-run-tests]
     runs-on: ubuntu-latest
     outputs:
-      timestamp: ${{ steps.timestampid.outputs.timestamp }}
+        timestamp: ${{ steps.timestampid.outputs.timestamp }}
     steps:
-      # We want a unique identifier to be used when we create subdirectories for our github pages with reports
-      - name: Set a timestamp
-        id: timestampid
-        # this will store current time with UTC in outputs.timestamp (eg of value: 20231028_233147Z)
-        run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-      - name: Install dependencies
-        run: npm ci
+    # We want a unique identifier to be used when we create subdirectories for our github pages with reports
+    - name: Set a timestamp
+      id: timestampid
+      # this will store current time with UTC in outputs.timestamp (eg of value: 20231028_233147Z)
+      run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT" 
 
-      # we now download the reports uploaded previously to merge them and create one single html report
-      - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: all-blob-reports # name of the file stored as artifact (as uploaded at the previous job)
-          path: all-blob-reports # name of the folder where the download will be saved
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - name: Install dependencies
+      run: npm ci
 
-      # Playwright will generate a report and store it inside a folder called '/playwright-report'
-      - name: Merge the blobs into one single HTML Report
-        run: npx playwright merge-reports --reporter html ./all-blob-reports
+    # we now download the reports uploaded previously to merge them and create one single html report
+    - name: Download blob reports from GitHub Actions Artifacts
+      uses: actions/download-artifact@v3
+      with:
+        name: all-blob-reports # name of the file stored as artifact (as uploaded at the previous job)
+        path: all-blob-reports # name of the folder where the download will be saved
 
-      - name: Upload full html report to artifacts for history
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: playwright-report-${{ steps.timestampid.outputs.timestamp }}
-          path: playwright-report
-          retention-days: 14
+    # Playwright will generate a report and store it inside a folder called '/playwright-report'
+    - name: Merge the blobs into one single HTML Report
+      run: npx playwright merge-reports --reporter html ./all-blob-reports
 
-      - name: Push the new files to github pages
-        # This will create a separate branch called gh-pages where it will store only reports. And from where it will push all future changes
-        # to github pages. Having a separate branch will keep the reports and changes commits separate to your main/master
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./playwright-report # from what folder to take files. It takes only contents
-          destination_dir: ${{ steps.timestampid.outputs.timestamp }} # a sub-directory where to publish to avoid overwriting other reports
+    - name: Upload full html report to artifacts for history
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: playwright-report-${{ steps.timestampid.outputs.timestamp }}
+        path: playwright-report
+        retention-days: 14
 
-      - name: Write URL in summary
-        run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
+    - name: Push the new files to github pages
+    # This will create a separate branch called gh-pages where it will store only reports. And from where it will push all future changes 
+    # to github pages. Having a separate branch will keep the reports and changes commits separate to your main/master
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./playwright-report # from what folder to take files. It takes only contents
+        destination_dir: ${{ steps.timestampid.outputs.timestamp }} # a sub-directory where to publish to avoid overwriting other reports
 
-      - name: Test Status
-        run: |
-          TRIGGERED_BY='${{ github.triggering_actor }}'
-          BRANCH='${{ github.ref }}'
+    - name: Write URL in summary
+      run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
+
+    - name: Post to a Slack channel
+      if: always()
+      env:
+          CI_PIPELINE_URL: 'https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}'
+          SLACK_CHANNEL: 'D07EQS1C65S'
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: |
+          TRIGGERED_BY="${{ github.triggering_actor }}"
+          BRANCH="${{ github.ref_name }}"
           REPORT_SUMMARY='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
+
           if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
             STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
             COLOR="#2EB67D"
@@ -110,73 +108,15 @@ jobs:
             STATUS=":black_square_for_stop: Test suite *E2E smoke tests* was cancelled"
             COLOR="#808080"
           fi
-          echo $TRIGGERED_BY
-          echo "BRANCH=$BRANCH" >> $GITHUB_ENV
-          echo "REPORT_SUMMARY=$REPORT_SUMMARY" >> "$GITHUB_ENV"
-          echo COLOR=$COLOR >> "$GITHUB_ENV"
 
-      - name: Post to a Slack channel
-        if: always()
-        id: slack
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          channel-id: "D07EQS1C65S"
-          payload: |
-            {
-              "attachments": [
-                {
-                  "color": "#2EB67D",
-                  "blocks": [
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "Test suite *E2E smoke tests* has succeeded:*\n<${{env.CI_PIPELINE_URL}}|Current runner link>*"
-                      }
-                    },
-                    {
-                      "type": "section",
-                      "fields": [
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Branch:*\n'integrate_slack'"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Triggered by:*\n Dimitriu Irina"
-                        },
-                        {
-                          "type": "mrkdwn",
-                          "text": "*Buld time:*\n'Time: $(TZ=$TZ date)'"
-                        }
-                      ]
-                    },
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "Test results (link available after 20 secs)."
-                      },
-                      "accessory": {
-                        "type": "button",
-                        "text": {
-                          "type": "plain_text",
-                          "text": "Summary",
-                          "emoji": true
-                        },
-                        "value": "click_me_123",
-                        "url": "${{env.REPORT_SUMMARY}}",
-                        "action_id": "button-action"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-        env:
-          CI_PIPELINE_URL: "https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}"
-          SLACK_CHANNEL: "D07EQS1C65S"
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-          REPORT_SUMMARY: 'https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
- 
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"channel\":\"$SLACK_CHANNEL\",
+            \"username\":\"Playwright\",
+            \"attachments\":[
+              {
+                \"color\":\"$COLOR\",
+                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|Logs>\n\n:bar_chart: <$REPORT_SUMMARY|Test results (link available after 20 secs)>\",
+                \"footer\":\"Time: $(TZ=$TZ date)\"
+              }
+            ]
+          }" $SLACK_WEBHOOK_URL
