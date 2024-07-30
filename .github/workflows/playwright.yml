@@ -95,7 +95,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
           TRIGGERED_BY="${{ github.triggering_actor }}"
-          BRANCH="${{ github.ref_name }}"
+          BRANCH="${{ github.ref }}"
 
           if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
             STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
@@ -114,7 +114,7 @@ jobs:
             \"attachments\":[
               {
                 \"color\":\"$COLOR\",
-                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|VIEW LOGS>\n\n:bar_chart: <${{ steps.report_url.outputs.report_url }}|VIEW REPORT>\",
+                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|VIEW LOGS>\n\n:bar_chart: <${steps.report_url.outputs.report_url }|VIEW REPORT/>\n",
                 \"footer\":\"Time: $(TZ=$TZ date)\"
               }
             ]
