@@ -95,7 +95,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
           TRIGGERED_BY="${{ github.triggering_actor }}"
-          BRANCH="${{ github.ref_name }}"
+          BRANCH="${{ github.ref }}"
           REPORT_SUMMARY='https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}'
 
           if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
@@ -115,7 +115,30 @@ jobs:
             \"attachments\":[
               {
                 \"color\":\"$COLOR\",
-                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|Logs>\n\n:bar_chart: <$REPORT_SUMMARY|Test results (link available after 20 secs)>\",
+                \"text\":\"$STATUS\n\n:book: <$CI_PIPELINE_URL|Logs>\n\n:bar_chart: <$REPORT_SUMMARY|Test results (link available after 20 secs)>\",
+                \"type": "section",
+                "fields": [
+                  {
+                  "type": "mrkdwn",
+                  "text": "*Branch:*\n\`$BRANCH\`"
+                  },
+                  {
+                  "type": "mrkdwn",
+                  "text": "*Triggered by:*\n\`$TRIGGERED_BY\`"
+                  }],
+                  \"type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Test results (link available after 20 secs)"}
+                  "accessory": {
+                    "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "Summary",
+                        "emoji": true}
+                  "value": "click_me_123",
+                  "url": $REPORT_SUMMARY,
+                  "action_id": "button-action"},
                 \"footer\":\"Time: $(TZ=$TZ date)\"
               }
             ]
