@@ -114,7 +114,7 @@ jobs:
             \"attachments\":[
               {
                 \"color\":\"$COLOR\",
-                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|VIEW LOGS>\n\n:bar_chart: <${steps.report_url.outputs.report_url }|VIEW REPORT/>\n",
+                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|VIEW LOGS>\n\n:bar_chart: <${steps.report_url.outputs.report_url }|VIEW REPORT/>",
                 \"footer\":\"Time: $(TZ=$TZ date)\"
               }
             ]
