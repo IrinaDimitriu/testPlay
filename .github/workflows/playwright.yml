@@ -112,7 +112,7 @@ jobs:
             \"attachments\":[
               {
                 \"color\":\"$COLOR\",
-                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|View logs>\n\n:bar_chart: <$REPORT_SUMMARY|Test results (link available after 20 secs)>\",
+                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|View logs>\n\n:bar_chart: <$REPORT|Test results (link available after 20 secs)>\",
                 \"footer\":\"Time: $(TZ=$TZ date)\"
               }
             ]
