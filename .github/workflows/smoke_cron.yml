@@ -3,14 +3,13 @@ on:
   workflow_dispatch: {}
   schedule:
     # Runs at 9:45 AM, 1:45 PM, and 4:45 PM UK time during GMT (late October to late March), excluding weekends
-    - cron: '45 9,13,16 * 10-12,1-3 1-5'
+    - cron: "45 9,13,16 * 10-12,1-3 1-5"
     # Runs at 8:45 AM, 12:45 PM, and 3:45 PM UTC during BST (late March to late October), excluding weekends
-    - cron: '45 8,12,15 * 4-9 1-5'
+    - cron: "15 9,12,15 * 4-9 1-5"
 concurrency:
   group: ${{ github.ref }}-smoke
   cancel-in-progress: true
 
-    
 jobs:
   setup-and-run-tests:
     timeout-minutes: 15
@@ -18,28 +17,28 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: npm ci
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
 
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
 
-    - name: Run Playwright tests
-      id: e2e_tests
-      run: npx playwright test --grep @smoke --project=chromium
+      - name: Run Playwright tests
+        id: e2e_tests
+        run: npx playwright test --grep @smoke --project=chromium
 
-    - name: Upload blob report to GitHub Actions Artifacts
-      if: always()
-      continue-on-error: true
-      uses: actions/upload-artifact@v3
-      with:
-        name: all-blob-reports
-        path: blob-report
-        retention-days: 14
+      - name: Upload blob report to GitHub Actions Artifacts
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: all-blob-reports
+          path: blob-report
+          retention-days: 14
 
   merge-reports-and-upload:
     # Merge reports after playwright tests, even if some shards have failed
@@ -47,49 +46,80 @@ jobs:
     needs: [setup-and-run-tests]
     runs-on: ubuntu-latest
     outputs:
-        timestamp: ${{ steps.timestampid.outputs.timestamp }}
+      timestamp: ${{ steps.timestampid.outputs.timestamp }}
     steps:
+      # We want a unique identifier to be used when we create subdirectories for our github pages with reports
+      - name: Set a timestamp
+        id: timestampid
+        # this will store current time with UTC in outputs.timestamp (eg of value: 20231028_233147Z)
+        run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
 
-    # We want a unique identifier to be used when we create subdirectories for our github pages with reports
-    - name: Set a timestamp
-      id: timestampid
-      # this will store current time with UTC in outputs.timestamp (eg of value: 20231028_233147Z)
-      run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT" 
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
 
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 18
-    - name: Install dependencies
-      run: npm ci
+      # we now download the reports uploaded previously to merge them and create one single html report
+      - name: Download blob reports from GitHub Actions Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: all-blob-reports # name of the file stored as artifact (as uploaded at the previous job)
+          path: all-blob-reports # name of the folder where the download will be saved
 
-    # we now download the reports uploaded previously to merge them and create one single html report
-    - name: Download blob reports from GitHub Actions Artifacts
-      uses: actions/download-artifact@v3
-      with:
-        name: all-blob-reports # name of the file stored as artifact (as uploaded at the previous job)
-        path: all-blob-reports # name of the folder where the download will be saved
+      # Playwright will generate a report and store it inside a folder called '/playwright-report'
+      - name: Merge the blobs into one single HTML Report
+        run: npx playwright merge-reports --reporter html ./all-blob-reports
 
-    # Playwright will generate a report and store it inside a folder called '/playwright-report'
-    - name: Merge the blobs into one single HTML Report
-      run: npx playwright merge-reports --reporter html ./all-blob-reports
+      - name: Upload full html report to artifacts for history
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report-${{ steps.timestampid.outputs.timestamp }}
+          path: playwright-report
+          retention-days: 14
 
-    - name: Upload full html report to artifacts for history
-      if: always()
-      uses: actions/upload-artifact@v3
-      with:
-        name: playwright-report-${{ steps.timestampid.outputs.timestamp }}
-        path: playwright-report
-        retention-days: 14
+      - name: Push the new files to github pages
+        # This will create a separate branch called gh-pages where it will store only reports. And from where it will push all future changes
+        # to github pages. Having a separate branch will keep the reports and changes commits separate to your main/master
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./playwright-report # from what folder to take files. It takes only contents
+          destination_dir: ${{ steps.timestampid.outputs.timestamp }} # a sub-directory where to publish to avoid overwriting other reports
 
-    - name: Push the new files to github pages
-    # This will create a separate branch called gh-pages where it will store only reports. And from where it will push all future changes 
-    # to github pages. Having a separate branch will keep the reports and changes commits separate to your main/master
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./playwright-report # from what folder to take files. It takes only contents
-        destination_dir: ${{ steps.timestampid.outputs.timestamp }} # a sub-directory where to publish to avoid overwriting other reports
+      - name: Write URL in summary
+        run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
 
-    - name: Write URL in summary
-      run: echo "### Test results (link available after 20 secs) - https://${{ github.repository_owner }}.github.io/testPlay/${{ steps.timestampid.outputs.timestamp }}/" >> $GITHUB_STEP_SUMMARY
+      - name: Post to a Slack channel
+        if: always()
+        env:
+          CI_PIPELINE_URL: "https://github.com/IrinaDimitriu/testPlay/actions/runs/${{ github.run_id }}"
+          SLACK_CHANNEL: "D07EQS1C65S"
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          TRIGGERED_BY="${{ github.triggering_actor }}"
+          BRANCH="${{ github.ref_name }}"
+          REPORT='https://github.com/IrinaDimitriu/testPlay/${{ steps.timestampid.outputs.timestamp }}/'
+          if [ "${{ needs.setup-and-run-tests.result }}" == "success" ]; then
+            STATUS=":white_check_mark: Test suite *E2E smoke tests* has succeeded"
+            COLOR="#2EB67D"
+          elif [ "${{ needs.setup-and-run-tests.result }}" == "failure" ]; then
+            STATUS=":x: Test suite *E2E smoke tests* has failed"
+            COLOR="#E01E5A"
+          else
+            STATUS=":black_square_for_stop: Test suite *E2E smoke tests* was cancelled"
+            COLOR="#808080"
+          fi
+          curl -X POST -H 'Content-type: application/json' --data "{
+            \"channel\":\"$SLACK_CHANNEL\",
+            \"username\":\"Playwright\",
+            \"attachments\":[
+              {
+                \"color\":\"$COLOR\",
+                \"text\":\"$STATUS\n\nBranch: \`$BRANCH\`\nTriggered by: \`$TRIGGERED_BY\`\n\n:book: <$CI_PIPELINE_URL|View logs>\n\n:bar_chart: <$REPORT_SUMMARY|Test results (link available after 20 secs)>\",
+                \"footer\":\"Time: $(TZ=$TZ date)\"
+              }
+            ]
+          }" $SLACK_WEBHOOK_URL
