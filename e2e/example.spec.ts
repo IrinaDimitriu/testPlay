@@ -32,7 +32,9 @@ test(
   }
 );
 
-test("login", async ({ page }) => {
+test("login",  {
+    tag: ["@smoke", "@regression"],
+  }, async ({ page }) => {
   await page.goto("https://letcode.in/signin");
   await page
     .getByRole("textbox", { name: "Enter registered email" })
