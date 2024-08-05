@@ -32,15 +32,18 @@ test(
   }
 );
 
-test.skip("login", async ({ page }) => {
+test("login",  {
+    tag: ["@smoke", "@regression"],
+  }, async ({ page }) => {
   await page.goto("https://letcode.in/signin");
   await page
     .getByRole("textbox", { name: "Enter registered email" })
     .fill(credential.customerDetails.username_default);
   await page
     .getByPlaceholder("Password")
-    .fill(credential.customerDetails.username_default);
-  await page.getByRole("button", { name: "Log in" }).click();
+    .fill(credential.customerDetails.password_default);
+  await page.getByRole("button", { name: "LOGIN" }).click();
   await page.waitForURL("https://letcode.in/");
   await expect(page).toHaveTitle("LetCode with Koushik");
+  await expect(page.getByRole('link', { name: 'Sign out' })).toBeVisible();
 });
