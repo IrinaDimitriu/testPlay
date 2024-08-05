@@ -22,8 +22,6 @@ export default defineConfig({
         open: IS_CI ? "never" : "on-failure",
       },
     ],
-    ["blob"],
-    ["github"],
   ],
 
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
