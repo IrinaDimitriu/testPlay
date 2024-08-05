@@ -36,7 +36,6 @@ testem.log
 
 test-results
 playwright-report
-blob-report
 
 # System Files
 .DS_Store
