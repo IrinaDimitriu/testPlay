@@ -1,2 +1,2 @@
 # testPlay
-Some playwright verifications
+Some playwright test verifications

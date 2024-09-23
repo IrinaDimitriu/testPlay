@@ -13,14 +13,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "prompt-sync": "^4.2.0",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "prompt-sync": "^4.2.0"
   },
   "devDependencies": {
     "@playwright/test": "^1.45.1",
-    "@types/node": "^20.14.10"
+    "@types/node": "^20.14.10",
+    "allure-playwright": "^3.0.0-beta.10"
   },
-  "tags": ["scope:regression"],
+  "tags": [
+    "scope:regression"
+  ],
   "targets": {
     "e2e": {
       "executor": "@nx/playwright:playwright",
