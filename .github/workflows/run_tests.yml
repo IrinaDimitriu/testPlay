@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright first tag only
 on:
   push:
     branches: [main, master]
