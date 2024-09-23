@@ -50,9 +50,9 @@ test(
   }
 );
 
-test("login",  {
-    tag: ["@smoke", "@regression"],
-  }, async ({ page }) => {
+test("login", {
+  tag: ["@smoke", "@regression"],
+}, async ({ page }) => {
   await page.goto("https://letcode.in/signin");
   await page
     .getByRole("textbox", { name: "Enter registered email" })
@@ -66,35 +66,33 @@ test("login",  {
   await expect(page.getByRole('link', { name: 'Sign out' })).toBeVisible();
 });
 
-test("drag and drop",  {
-    tag: ["@smoke", "@regression"],
-  }, async ({ page }) => {
+test("drag and drop", {
+  tag: ["@smoke", "@regression"],
+}, async ({ page }) => {
   await page.goto("https://letcode.in/sortable");
   // Localizam elementul ce dorim sa il mutam
   const itemCeDorimSalMutam = page.getByText('Go home'); // definim locatorul
 
   // Localizam unde vrem sa il mutam
-  let listaUndeDorimSaMutam = page.locator('[cdkdroplistgroup] > div:nth-of-type(2) > .cdk-drop-list'); // definim locatorul catre lista 
+  let listaUndeDorimSaMutam = page.locator('div#cdk-drop-list-1'); // definim locatorul catre lista 
 
   // Actiunea de drag si verificam lista ca contine 
   await itemCeDorimSalMutam.dragTo(listaUndeDorimSaMutam);
   await expect(listaUndeDorimSaMutam).toContainText('Go home')
 
-  const itemCount = await listaUndeDorimSaMutam.count();
+  const listItems = listaUndeDorimSaMutam.locator('div[role="listitem"]');
+  const itemCount = await listItems.count();
   console.log(`Number of items in the list: ${itemCount}`);
 
   // Loop through each list item and log the text content
   for (let i = 0; i < itemCount; i++) {
-    const text = await listaUndeDorimSaMutam.nth(i).textContent();
+    const text = await listItems.nth(i).textContent();
     console.log(`Item ${i + 1} is: ${text}`);
   }
 
   // Optionally, get all text contents of the list at once
   const allTexts = await listaUndeDorimSaMutam.allTextContents();
   console.log(allTexts);
-
-  // You can assert that the list contains a specific number of elements
-  // await expect(listaUndeDorimSaMutam).toHaveCount(5); 
 });
 
 
@@ -154,15 +152,15 @@ test('Verify new dropdown', async ({ page }) => {
 
   // Check if the dropdown is collapsed (hidden)
   const isDropdownHidden = await dropdownMenu.isHidden();
-  
+
   // Assert that the dropdown is collapsed
   await expect(isDropdownHidden).toBe(true);  // Dropdown should be hidden (collapsed)
-  
+
   // Optionally: You can check for visibility using other methods:
   // 1. CSS property
   const displayValue = await dropdown.evaluate(el => getComputedStyle(el).display);
   expect(displayValue).toBe('Select Fruit');  // The display should be "none"
-  
+
   // 2. Visibility check (if it uses visibility hidden)
   const visibilityValue = await dropdown.evaluate(el => getComputedStyle(el).visibility);
   expect(visibilityValue).not.toBe('visible');  // Sho
