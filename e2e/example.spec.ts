@@ -82,6 +82,7 @@ test("drag and drop", {
   
   // Optionally, get all text contents of the list at once
   const allTexts = await listaUndeDorimSaMutam.allTextContents();
+  await page.waitForTimeout(2000)
   console.log(allTexts);
   await expect(allTexts.toString()).toContain('Go home');
 });
