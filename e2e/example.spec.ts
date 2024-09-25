@@ -74,13 +74,13 @@ test("drag and drop", {
   const itemCeDorimSalMutam = page.getByText('Go home'); // definim locatorul
 
   // Localizam unde vrem sa il mutam
-  let listaUndeDorimSaMutam = page.locator('div#cdk-drop-list-1'); // definim locatorul catre lista 
+  let listaUndeDorimSaMutam = await page.locator('div#cdk-drop-list-1'); // definim locatorul catre lista 
 
   // Actiunea de drag si verificam lista ca contine 
   await itemCeDorimSalMutam.dragTo(listaUndeDorimSaMutam);
   await expect(listaUndeDorimSaMutam).toContainText('Go home')
 
-  const listItems = listaUndeDorimSaMutam.locator('div[role="listitem"]');
+  const listItems = await listaUndeDorimSaMutam.locator('div[role="listitem"]');
   const itemCount = await listItems.count();
   console.log(`Number of items in the list: ${itemCount}`);
 
