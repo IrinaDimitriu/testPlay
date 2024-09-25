@@ -85,7 +85,7 @@ test("drag and drop", {
   await page.waitForTimeout(3000); // You can experiment with different timeouts here
 
   // Optionally, get all text contents of the list at once
-  const allTexts = await listaUndeDorimSaMutam.allTextContents();
+  const allTexts = await page.locator('div#cdk-drop-list-1').allTextContents();
   console.log('List contents after drag and drop:', allTexts);
 
   // Verifying that 'Go home' is present in the list
