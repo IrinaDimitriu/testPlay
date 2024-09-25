@@ -34,8 +34,12 @@ yarn-error.log
 testem.log
 /typings
 
+# reports
 test-results
 playwright-report
+blob-report
+allure-report
+allure-results
 
 # System Files
 .DS_Store
