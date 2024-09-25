@@ -70,21 +70,26 @@ test("drag and drop", {
   tag: ["@smoke", "@regression"],
 }, async ({ page }) => {
   await page.goto("https://letcode.in/sortable");
+
   // Localizam elementul ce dorim sa il mutam
-  const itemCeDorimSalMutam = page.getByText('Go home'); // definim locatorul
+  const itemCeDorimSalMutam = page.getByText('Go home');
 
   // Localizam unde vrem sa il mutam
-  let listaUndeDorimSaMutam = page.locator('div#cdk-drop-list-1'); // definim locatorul catre lista 
+  let listaUndeDorimSaMutam = page.locator('div#cdk-drop-list-1');
   await expect(listaUndeDorimSaMutam).toBeVisible();
 
   // Actiunea de drag
   await itemCeDorimSalMutam.dragTo(listaUndeDorimSaMutam);
-  
+
+  // Wait for some time to ensure drag and drop is complete
+  await page.waitForTimeout(3000); // You can experiment with different timeouts here
+
   // Optionally, get all text contents of the list at once
   const allTexts = await listaUndeDorimSaMutam.allTextContents();
-  await page.waitForTimeout(2000)
-  console.log(allTexts);
-  await expect(allTexts.toString()).toContain('Go home');
+  console.log('List contents after drag and drop:', allTexts);
+
+  // Verifying that 'Go home' is present in the list
+  expect(allTexts.join()).toContain('Go home');
 });
 
 
