@@ -2,6 +2,17 @@ import { expect } from '@playwright/test'
 import test from "../e2e/test";
 import credential from "../resources/testData.json" with {type: "json"}
 
+test.afterEach(async ({ app }, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    console.log(
+      `${
+        testInfo.title
+      } -did not run as expected, ended up at ${app.base.page.url()}`
+    );
+  }
+  app.base.page.close();
+});
+
 test.describe("OVO Energy Cookie Overload and Size Test",  {
     tag: ["@first"],
   },() => {

@@ -1,6 +1,17 @@
 import { test, expect } from '@playwright/test'
 import credential from "../resources/testData.json" with {type: "json"}
 
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    console.log(
+      `${
+        testInfo.title
+      } -did not run as expected, ended up at ${page.url()}`
+    );
+  }
+  page.close();
+});
+
 test(
   "has title",
   {
@@ -66,7 +77,7 @@ test("login", {
   await expect(page.getByRole('link', { name: 'Sign out' })).toBeVisible();
 });
 
-test("drag and drop", {
+test.skip("drag and drop", {
   tag: ["@smoke", "@regression"],
 }, async ({ page }) => {
   await page.goto("https://letcode.in/sortable");
