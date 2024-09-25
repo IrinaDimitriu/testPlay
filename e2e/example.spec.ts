@@ -75,7 +75,7 @@ test("drag and drop", {
   const itemCeDorimSalMutam = page.getByText('Go home');
 
   // Localizam unde vrem sa il mutam
-  let listaUndeDorimSaMutam = page.locator('div#cdk-drop-list-1');
+  const listaUndeDorimSaMutam = page.locator('div#cdk-drop-list-1');
   await expect(listaUndeDorimSaMutam).toBeVisible();
 
   // Actiunea de drag
