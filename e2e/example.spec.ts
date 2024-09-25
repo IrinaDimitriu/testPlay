@@ -74,25 +74,16 @@ test("drag and drop", {
   const itemCeDorimSalMutam = page.getByText('Go home'); // definim locatorul
 
   // Localizam unde vrem sa il mutam
-  let listaUndeDorimSaMutam = await page.locator('div#cdk-drop-list-1'); // definim locatorul catre lista 
+  let listaUndeDorimSaMutam = page.locator('div#cdk-drop-list-1'); // definim locatorul catre lista 
+  await expect(listaUndeDorimSaMutam).toBeVisible();
 
-  // Actiunea de drag si verificam lista ca contine 
+  // Actiunea de drag
   await itemCeDorimSalMutam.dragTo(listaUndeDorimSaMutam);
-  await expect(listaUndeDorimSaMutam).toContainText('Go home')
-
-  const listItems = await listaUndeDorimSaMutam.locator('div[role="listitem"]');
-  const itemCount = await listItems.count();
-  console.log(`Number of items in the list: ${itemCount}`);
-
-  // Loop through each list item and log the text content
-  for (let i = 0; i < itemCount; i++) {
-    const text = await listItems.nth(i).textContent();
-    console.log(`Item ${i + 1} is: ${text}`);
-  }
-
+  
   // Optionally, get all text contents of the list at once
   const allTexts = await listaUndeDorimSaMutam.allTextContents();
   console.log(allTexts);
+  await expect(allTexts.toString()).toContain('Go home');
 });
 
 
