@@ -19,6 +19,7 @@
   "devDependencies": {
     "@playwright/test": "^1.45.1",
     "@types/node": "^20.14.10",
+    "@types/prompt-sync": "^4.2.3",
     "allure-playwright": "^3.0.0-beta.10"
   },
   "tags": [
