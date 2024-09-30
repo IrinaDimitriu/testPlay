@@ -3,16 +3,25 @@ import test from "./test";
 import { beforeEach } from "node:test";
 
 test.beforeEach(async ({ app }) => {
-  await test.step("Complete successfully the customer-property for COS case", async () => {
-      await app.base.navigateTo("https://letcode.in/test");
+  await test.step("Navigate to calendar", async () => {
+    await app.base.navigateTo("https://letcode.in/calendar");
   });
 });
-    
+
+test.afterEach(async ({ app }, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    console.log(
+      `${
+        testInfo.title
+      } - did not run as expected, ended up at ${app.base.page.url()}`
+    );
+  }
+  app.base.page.close();
+});
+
 test("Select tomorrow's and next month's date from calendar", async ({
   page,
 }) => {
-  await page.goto("https://letcode.in/calendar");
-
   // Gasim ziua de maine bazandune pe ziua curenta
   const today = new Date();
   const tomorrow = new Date(today);
@@ -30,13 +39,9 @@ test("Select tomorrow's and next month's date from calendar", async ({
   // adauga verificarea necesara
 });
 
-test("Select next month's date from calendar", async ({
-  page,
-}) => {
-  await page.goto("https://letcode.in/calendar");
-
+test("Select next month's date from calendar", async ({ page }) => {
   const today = new Date();
-  
+
   const currentDayNextMonth = new Date(
     today.getFullYear(),
     today.getMonth() + 1,
@@ -45,10 +50,11 @@ test("Select next month's date from calendar", async ({
   const nextMonthDay = currentDayNextMonth.getDate();
   console.log("next month day is: ", nextMonthDay);
 
-  await page.locator(".datepicker-nav-next").first().click();// dau click pe urmatoarea luna
+  await page.locator(".datepicker-nav-next").first().click(); // dau click pe urmatoarea luna
 
   // Select the first day of the next month
-  await page.getByRole("button", { name: `${nextMonthDay}`, exact: true })
+  await page
+    .getByRole("button", { name: `${nextMonthDay}`, exact: true })
     .nth(1)
     .click();
 
