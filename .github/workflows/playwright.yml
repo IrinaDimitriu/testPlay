@@ -3,28 +3,24 @@ on:
   pull_request:
     branches: [main, master]
 jobs:
-  # test-typescript:
-  #   name: TypeScript Tests
-  #   runs-on: ubuntu-latest
+  test-typescript:
+    name: TypeScript Tests
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout
-  #       id: checkout
-  #       uses: actions/checkout@v4
+    steps:
+      - name: Checkout
+        id: checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup Node.js
-  #       id: setup-node
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: 20
+      - name: Setup Node.js
+        id: setup-node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-  #     - name: Check Format
-  #       id: npm-format-check
-  #       run: npm run format:check
-
-  #     - name: Lint
-  #       id: npm-lint
-  #       run: npm run lint
+      - name: Check Format
+        id: npm-format-check
+        run: npm run format:check
 
   setup-and-run-tests:
     timeout-minutes: 15

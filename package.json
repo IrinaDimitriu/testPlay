@@ -7,7 +7,8 @@
     "test": "npx playwright test",
     "report": "npx playwright show-report",
     "chrome": "npx playwright test --project=chromium example.spec.test",
-    "specific": "npx playwright test -g 'get started link' --project=chromium"
+    "specific": "npx playwright test -g 'get started link' --project=chromium",
+    "format:check": "npx prettier --check ."
   },
   "type": "module",
   "author": "",
