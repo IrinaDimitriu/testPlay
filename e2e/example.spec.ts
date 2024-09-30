@@ -77,9 +77,7 @@ test("login", {
   await expect(page.getByRole('link', { name: 'Sign out' })).toBeVisible();
 });
 
-test.skip("drag and drop", {
-  tag: ["@smoke", "@regression"],
-}, async ({ page }) => {
+test.skip("drag and drop", { tag: ["@smoke", "@regression"],}, async ({ page }) => {
   await page.goto("https://letcode.in/sortable");
 
   // Localizam elementul ce dorim sa il mutam

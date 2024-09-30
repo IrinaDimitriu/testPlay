@@ -4,6 +4,7 @@ const IS_CI = !!process.env["CI"];
 
 export default defineConfig({
   testDir: "./e2e",
+  testMatch: "*.spec.ts",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -26,7 +27,7 @@ export default defineConfig({
     ["github"],
     ["allure-playwright"],
   ],
-  
+
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
