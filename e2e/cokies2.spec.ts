@@ -31,7 +31,7 @@ test.describe("OVO Energy Cookie Overload and Size Test", () => {
         acc[cookie.name] = (acc[cookie.name] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
 
     // Check for overloaded cookies (cookies set multiple times)
@@ -49,20 +49,20 @@ test.describe("OVO Energy Cookie Overload and Size Test", () => {
     page,
   }) => {
     // Visit the OVO Energy homepage
-      await page.goto("https://www.ovoenergy.com/");
-      await page.waitForTimeout(15000);
+    await page.goto("https://www.ovoenergy.com/");
+    await page.waitForTimeout(15000);
     await page.waitForLoadState("load");
 
     await page.goto("https://www.ovoenergy.com/home-energy-plans");
     await page.waitForTimeout(15000);
     await page.waitForLoadState("load");
 
-      await page.goto("https://www.ovoenergy.com/beyond");
-      await page.waitForTimeout(15000);
+    await page.goto("https://www.ovoenergy.com/beyond");
+    await page.waitForTimeout(15000);
     await page.waitForLoadState("load");
 
-      await page.goto("https://products.ovoenergy.com/our-energy/1-year-fixed");
-      await page.waitForTimeout(15000);
+    await page.goto("https://products.ovoenergy.com/our-energy/1-year-fixed");
+    await page.waitForTimeout(15000);
     await page.waitForLoadState("load");
 
     await page.goto("https://www.ovoenergy.com/");
@@ -85,13 +85,10 @@ test.describe("OVO Energy Cookie Overload and Size Test", () => {
     // Optional: Assertion example to ensure no cookies exceed the size limit or are duplicated
     updatedCookies.forEach((cookie) => {
       const size = calculateCookieSize(cookie);
-        expect(size).toBeLessThanOrEqual(MAX_COOKIE_SIZE);
-        
-              const duplicates = updatedCookies.filter(
-                (c) => c.name === cookie.name
-              );
-              expect(duplicates.length).toBeLessThanOrEqual(1);
-        
+      expect(size).toBeLessThanOrEqual(MAX_COOKIE_SIZE);
+
+      const duplicates = updatedCookies.filter((c) => c.name === cookie.name);
+      expect(duplicates.length).toBeLessThanOrEqual(1);
     });
   });
 });

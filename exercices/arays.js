@@ -1,10 +1,21 @@
 // ex 3
-const fructe = ['mere', 'pere', 'banane', 'rosii', 'caise'];
-console.log(`Obiectul nostru este: ` + `\u001b[1;33m` + `${fructe}` + `\u001b[0m`)
-console.log(`A patra valoare a obiectului este: ` + `\u001b[1;31m` + `${fructe[3]}` + `\u001b[0m`)
+const fructe = ["mere", "pere", "banane", "rosii", "caise"];
+console.log(
+  `Obiectul nostru este: ` + `\u001b[1;33m` + `${fructe}` + `\u001b[0m`,
+);
+console.log(
+  `A patra valoare a obiectului este: ` +
+    `\u001b[1;31m` +
+    `${fructe[3]}` +
+    `\u001b[0m`,
+);
 fructe.splice(3, 1); // stergem din obiect
-console.log(`Dupa stergere obiectului este: \n` + `\u001b[1;32m` + `'${fructe}'` + `\u001b[0m`)
-
+console.log(
+  `Dupa stergere obiectului este: \n` +
+    `\u001b[1;32m` +
+    `'${fructe}'` +
+    `\u001b[0m`,
+);
 
 // ex 3
 // const fructe = ['mere', 'pere', 'banane', 'rosii', 'caise'];
@@ -17,7 +28,6 @@ console.log(`Dupa stergere obiectului este: \n` + `\u001b[1;32m` + `'${fructe}'`
 
 // const reversed = array1.reverse();
 // console.log('reversed:', reversed);
-
 
 // ex 5
 // const months = ['Mai', 'Iulie', 'August', 'Octombrie'];
