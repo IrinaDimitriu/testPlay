@@ -7,8 +7,6 @@
 
 // console.log("The fith char from input is: " + chars)
 
-
-
 const prompt = require("prompt-sync")();
 const text = prompt("Acesta este sirul de caractere", "....");
 const fifthcharacterofstring = text[4];

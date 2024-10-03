@@ -1,7 +1,7 @@
 let answer1 = "\nIt's alright";
 let answer2 = "\nHe is called 'Johnny'";
-let answer3 = '\nHe is called "Johnny"'; 
-let answer4 = '\nIt\'s alright.';
+let answer3 = '\nHe is called "Johnny"';
+let answer4 = "\nIt's alright.";
 
 let x = BigInt("123123123131323");
 let y = BigInt("123123123131323");

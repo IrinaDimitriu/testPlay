@@ -36,7 +36,7 @@ test.describe("OVO Energy Cookie Overload, Size, and Count Test", () => {
         acc[cookie.name] = (acc[cookie.name] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
 
     // Check for overloaded cookies (cookies set multiple times)
@@ -56,7 +56,6 @@ test.describe("OVO Energy Cookie Overload, Size, and Count Test", () => {
   test.skip("should check for overloaded cookies, log cookie sizes, total cookie size, and total cookie count", async ({
     page,
   }) => {
-      
     // Visit the OVO Energy homepage
     await page.goto("https://www.ovoenergy.com/");
     await page.waitForLoadState("load");

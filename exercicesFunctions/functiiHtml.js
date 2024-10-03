@@ -1,23 +1,20 @@
-import { arrayEx1, strEx2, numEx3 } from './variabile.js'
+import { arrayEx1, strEx2, numEx3 } from "./variabile.js";
 
 export function gasesteNrCelMaiMic(arr) {
-    return Math.min(...arr);
+  return Math.min(...arr);
 }
 
 function AlphabeticalOrder(str) {
-    return str
-        .split("")
-        .sort()
-        .join("");
+  return str.split("").sort().join("");
 }
 
 function parSauImpar(int) {
-    let ouput = int % 2;
-    if (ouput == 0) {
-        return "Numar par";
-    } else {
-        return "Numar impar";
-    }
+  let ouput = int % 2;
+  if (ouput == 0) {
+    return "Numar par";
+  } else {
+    return "Numar impar";
+  }
 }
 
 document.body.innerHTML += `Exercitiul 1. </br>`;

@@ -23,7 +23,7 @@ test.describe("OVO Energy Cookie Overload and Size Test", () => {
         acc[cookie.name] = (acc[cookie.name] || 0) + 1;
         return acc;
       },
-      {} as Record<string, number>
+      {} as Record<string, number>,
     );
 
     // Check for overloaded cookies (cookies set multiple times)
@@ -39,7 +39,7 @@ test.describe("OVO Energy Cookie Overload and Size Test", () => {
       console.log(`Cookies size is: ${size}`);
       if (size > MAX_COOKIE_SIZE) {
         console.warn(
-          `Cookie "${cookie.name}" exceeds the maximum size limit (${size} bytes)`
+          `Cookie "${cookie.name}" exceeds the maximum size limit (${size} bytes)`,
         );
       }
     });
@@ -60,8 +60,8 @@ test.describe("OVO Energy Cookie Overload and Size Test", () => {
     await page.goto("https://www.ovoenergy.com/");
     await page.waitForLoadState("load");
 
-      await page.goto("https://www.ovoenergy.com/home-energy-plans");
-      await page.waitForTimeout(20000);
+    await page.goto("https://www.ovoenergy.com/home-energy-plans");
+    await page.waitForTimeout(20000);
     await page.waitForLoadState("load");
 
     await page.goto("https://www.ovoenergy.com/beyond");
