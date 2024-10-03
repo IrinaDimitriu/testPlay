@@ -1,6 +1,4 @@
-import { expect } from "@playwright/test";
 import test from "./test";
-import { beforeEach } from "node:test";
 
 test.beforeEach(async ({ app }) => {
   await test.step("Navigate to calendar", async () => {
