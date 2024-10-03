@@ -21,8 +21,10 @@ test("Select tomorrow's and next month's date from calendar", async ({
   page,
 }) => {
   // Gasim ziua de maine bazandune pe ziua curenta
-  const today = new Date();
-  const tomorrow = new Date(today);
+      const today = new Date();
+    
+  const tomorrow =
+    new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
   // extragem doar ziua de maine - "1"
