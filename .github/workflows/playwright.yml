@@ -28,8 +28,8 @@ jobs:
       fail-fast: false
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install dependencies
@@ -45,7 +45,7 @@ jobs:
       - name: Upload blob report to GitHub Actions Artifacts
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: all-blob-reports
           path: blob-report
@@ -65,8 +65,8 @@ jobs:
         # this will store current time with UTC in outputs.timestamp (eg of value: 20231028_233147Z)
         run: echo "timestamp=$(date --utc +%Y%m%d_%H%M%SZ)" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
       - name: Install dependencies
@@ -74,7 +74,7 @@ jobs:
 
       # we now download the reports uploaded previously to merge them and create one single html report
       - name: Download blob reports from GitHub Actions Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: all-blob-reports # name of the file stored as artifact (as uploaded at the previous job)
           path: all-blob-reports # name of the folder where the download will be saved
@@ -85,7 +85,7 @@ jobs:
 
       - name: Upload full html report to artifacts for history
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ steps.timestampid.outputs.timestamp }}
           path: playwright-report
