@@ -1,6 +1,4 @@
-import { expect } from "@playwright/test";
 import test from "./test";
-import { beforeEach } from "node:test";
 
 test.beforeEach(async ({ app }) => {
   await test.step("Navigate to calendar", async () => {
@@ -13,7 +11,7 @@ test.afterEach(async ({ app }, testInfo) => {
     console.log(
       `${
         testInfo.title
-      } - did not run as expected, ended up at ${app.base.page.url()}`
+      } - did not run as expected, ended up at ${app.base.page.url()}`,
     );
   }
   app.base.page.close();
@@ -23,8 +21,10 @@ test("Select tomorrow's and next month's date from calendar", async ({
   page,
 }) => {
   // Gasim ziua de maine bazandune pe ziua curenta
-  const today = new Date();
-  const tomorrow = new Date(today);
+      const today = new Date();
+    
+  const tomorrow =
+    new Date(today);
   tomorrow.setDate(today.getDate() + 1);
 
   // extragem doar ziua de maine - "1"
@@ -45,7 +45,7 @@ test("Select next month's date from calendar", async ({ page }) => {
   const currentDayNextMonth = new Date(
     today.getFullYear(),
     today.getMonth() + 1,
-    today.getDate()
+    today.getDate(),
   );
   const nextMonthDay = currentDayNextMonth.getDate();
   console.log("next month day is: ", nextMonthDay);
