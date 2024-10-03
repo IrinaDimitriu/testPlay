@@ -11,7 +11,7 @@ test.afterEach(async ({ app }, testInfo) => {
     console.log(
       `${
         testInfo.title
-      } - did not run as expected, ended up at ${app.base.page.url()}`
+      } - did not run as expected, ended up at ${app.base.page.url()}`,
     );
   }
   app.base.page.close();
@@ -43,7 +43,7 @@ test("Select next month's date from calendar", async ({ page }) => {
   const currentDayNextMonth = new Date(
     today.getFullYear(),
     today.getMonth() + 1,
-    today.getDate()
+    today.getDate(),
   );
   const nextMonthDay = currentDayNextMonth.getDate();
   console.log("next month day is: ", nextMonthDay);
